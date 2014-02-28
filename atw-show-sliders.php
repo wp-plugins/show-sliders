@@ -5,7 +5,7 @@ Plugin URI: http://aspentheme.com/plugins/aspen-shortcodes-and-widgets/
 Description: Aspen Themeworks Show Sliders - the ultimate responsive slider plugin. Show posts, images, galleries displayed in a slider, in columns, or boxed. The most flexible slider plugin available.
 Author: wpweaver
 Author URI: http://weavertheme.com/about/
-Version: 1.0.1
+Version: 1.0.2
 
 License: GPL
 
@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* CORE FUNCTIONS
 */
 
-define ( 'ATW_SLIDER_PI_VERSION','1.0.1');
+define ( 'ATW_SLIDER_PI_VERSION','1.0.2');
 define ( 'ATW_SLIDER_PI_PRO', false);            // change this and the Plugin Name above when building Pro version
 define ( 'ATW_SLIDER_PI_MINIFY','.min');		// '' for dev, '.min' for production
 
@@ -678,8 +678,16 @@ add_filter( 'theme_mod_header_image' , 'atw_slider_kill_header_image');
 */
 
 } else {    // !!!! Show Posts NOT installed !!!!!
+?>
+<p style="border:4px solid red; background-color:pink;padding:5px; max-width:70%;margin-left:auto;margin-right:auto">
+    Sorry - you must first deactivate the plugin - <em>ATW Show Sliders</em>, then install and activate
+    <a href="http://wordpress.org/plugins/show-posts/"><strong>ATW Show Posts</strong></a>, and then reactivate
+    <em>ATW Show Sliders</em>. This is a one-time procedure.
+</p>
 
-    add_action('admin_menu', 'atw_slider_admin_menu');  // let them know they need show_posts
+<?php
+
+//add_action('admin_menu', 'atw_slider_admin_menu');  // let them know they need show_posts
 
 // ========================================= >>> atw_slider_admin_menu <<< ===============================
 
@@ -690,7 +698,7 @@ function atw_slider_admin_menu() {
 
 	/* using registered $page handle to hook stylesheet loading for this admin page */
 
-    add_action('admin_print_styles-'.$page, 'atw_slider_admin_scripts');
+    //add_action('admin_print_styles-'.$page, 'atw_slider_admin_scripts');
 }
 
 // ========================================= >>> atw_slider_admin <<< ===============================
@@ -716,7 +724,7 @@ function atw_slider_admin_scripts() {
 
 }
 
-require_once((dirname( __FILE__ ) . '/includes/atw-activate-show-posts.php'));
+//require_once((dirname( __FILE__ ) . '/includes/atw-activate-show-posts.php'));
 
 }   // end Show Posts not installed
 ?>
