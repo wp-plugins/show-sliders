@@ -5,7 +5,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: slider, slide show, recent posts, responsive, responsive slider, [gallery], gallery slide show, slider options, slider shortcode, FlexSlider
 Requires at least: 3.5
 Tested up to: 3.8
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 == Description ==
 
@@ -94,6 +94,9 @@ normally appear in the rest of your site.
 * mousewheel is licensed under MIT
 
 == Changelog ==
+
+= 1.0.3 =
+* Fixed activation order issues with Show Posts and Show Sliders
 
 = 1.0.2 =
 * Temporary work around for requirement that ATW Show Posts be activated first.

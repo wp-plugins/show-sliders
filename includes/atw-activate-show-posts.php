@@ -47,11 +47,13 @@ function atw_slider_install_plugins() {
 		'menu_title'                      => __( 'Show Slider Plugin', $theme_text_domain ),
 		'installing'                      => __( 'Installing Plugin: %s', $theme_text_domain ), // %1$s = plugin name
 		'oops'                            => __( 'Something went wrong with the plugin API.', $theme_text_domain ),
-		'notice_can_install_required'     => _n_noop( 'ATW Show Sliders requires the following plugin: %1$s.', 'ATW Show Sliders requires the following plugins: %1$s.' ), // %1$s = plugin name(s)
-		'notice_can_install_recommended'  => _n_noop( 'ATW Show Slider recommends this plugin, %1$s.', 'ATW Show Sliders recommends these plugins, %1$s.' ), // %1$s = plugin name(s)
+		'notice_can_install_required'     => _n_noop( 'ATW Show Sliders <em>requires</em> the following plugin: %1$s.', 'ATW Show Sliders <em>requires</em> the following plugins: %1$s.' ), // %1$s = plugin name(s)
+		'notice_can_install_recommended'  => _n_noop( 'ATW Show Sliders recommends this plugin, %1$s.', 'ATW Show Sliders recommends these plugins, %1$s.' ), // %1$s = plugin name(s)
 		'notice_cannot_install'           => _n_noop( 'Sorry, but you do not have the correct permissions to install the %s plugin. Contact the administrator of this site for help on getting the plugin installed.', 'Sorry, but you do not have the correct permissions to install the %s plugins. Contact the administrator of this site for help on getting the plugins installed.' ), // %1$s = plugin name(s)
-		'notice_can_activate_required'    => _n_noop( 'The following required plugin is currently inactive: %1$s.', 'The following required plugins are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+		'notice_can_activate_required'    => _n_noop( 'The following plugin <em>required</em> by ATW Show Sliders is currently inactive: %1$s.', 'The following plugins <em>required</em> by ATW Show Sliders are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+
 		'notice_can_activate_recommended' => _n_noop( 'Please activate this recommended plugin, %1$s.', 'Please activate these recommended plugins, %1$s.' ), // %1$s = plugin name(s)
+
 		'notice_cannot_activate'          => _n_noop( 'Sorry, but you do not have the correct permissions to activate the %s plugin. Contact the administrator of this site for help on getting the plugin activated.', 'Sorry, but you do not have the correct permissions to activate the %s plugins. Contact the administrator of this site for help on getting the plugins activated.' ), // %1$s = plugin name(s)
 		'notice_ask_to_update'            => _n_noop( 'The following plugin needs to be updated to its latest version to ensure maximum compatibility with Aspen: %1$s.', 'The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s.' ), // %1$s = plugin name(s)
 		'notice_cannot_update'            => _n_noop( 'Sorry, but you do not have the correct permissions to update the %s plugin. Contact the administrator of this site for help on getting the plugin updated.', 'Sorry, but you do not have the correct permissions to update the %s plugins. Contact the administrator of this site for help on getting the plugins updated.' ), // %1$s = plugin name(s)
@@ -66,7 +68,6 @@ function atw_slider_install_plugins() {
 	tgmpa( $plugins, $config );
 
 }
-
 
 
 add_action( 'tgmpa_register', 'atw_slider_install_plugins' );
