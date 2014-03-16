@@ -4,8 +4,8 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: slider, slide show, recent posts, responsive, responsive slider, [gallery], gallery slide show, slider options, slider shortcode, FlexSlider
 Requires at least: 3.5
-Tested up to: 3.8
-Stable tag: 1.0.3
+Tested up to: 3.9
+Stable tag: 1.0.8
 
 == Description ==
 
@@ -50,10 +50,12 @@ No other slider makes it as easy to select the source of your images and posts.
 
 = Pro Version Available =
 
-While we think the basic, free version of ATW Show Sliders provides an easy-to-use basic slider with enough options for many people, we also know that
-others want even more control over the appearance of their sliders. So we also offer ATW Slow Sliders Pro that has many
+While we think the basic, free version of ATW Show Sliders provides an easy-to-use basic slider with enough options
+for many people, we also know that
+others want even more control over the appearance of their sliders. So we also offer ATW Show Sliders Pro that has many
 more options, including more sizing and layout options; more control over how images are displayed with titles, captions,
-and descriptions; support for Videos in sliders, more control of Carousels; timing and order options, and other options
+and descriptions; support for Videos in sliders, more control of Carousels; selection of over 20 different navigation arrows,
+display options for navigation arrows,timing and order options, per-slider custom CSS, and other options
 to fine tune your slider. There is no other slider plugin like it.
 
 == Installation ==
@@ -94,6 +96,25 @@ normally appear in the rest of your site.
 * mousewheel is licensed under MIT
 
 == Changelog ==
+= 1.0.8 =
+* Fixed "Enter" on text input areas issue triggering submit
+* Added support for Sliding Thumbnails for Posts Sliders
+* Added max-height for thumbnail pager images
+
+= 1.0.6 =
+* Show recommended plugin only if user can activate plugins
+* Fixed animation time issue
+
+= 1.0.5 =
+* Fixed auto-update issues with Pro version
+
+= 1.0.4 =
+* Fixed arrow spacing when margins specified for slider
+* Added Per-slider custom css (pro)
+* Added selection of left/right arrows (pro)
+* Added show arrows in upper right corner (pro)
+* Added always show arrows (pro)
+* Added disable arrows slide-in effect (pro)
 
 = 1.0.3 =
 * Fixed activation order issues with Show Posts and Show Sliders
@@ -102,7 +123,7 @@ normally appear in the rest of your site.
 * Temporary work around for requirement that ATW Show Posts be activated first.
 
 = 1.0.1 =
-* Added arbitray link option for images defined in a post (Pro)
+* Added arbitrary link option for images defined in a post (Pro)
 * When Video, will not use FI for image for all slides
 * Fixed opacity for slider pager when above
 

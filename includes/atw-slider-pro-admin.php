@@ -50,12 +50,13 @@ function atw_slider_general_slider_layout() {
 
     atw_slider_subheader('Thumbnail Pagers','Attributes of thumbnail pager. (Do <em>not</em> apply to Carousels.)');
 
-    atw_slider_list('Slider Thumbnail Area Width - Percent of main slider width Thumbnail Slider uses.');
-    atw_slider_list('Number of pager thumbnails (Default: Thumbnails - 5 per row; Sliding Thumbnails - 6)');
-    atw_slider_list('Border around Thumbnail and Sliding Thumbnails pager images. (Transparent, so it will match slider bg color. Default:none)');
+    atw_slider_list('Sliding Thumbnail Area Width - Percent of main slider width Thumbnail Slider uses.');
     atw_slider_list('Move Sliding Thumbnail pager above main slider');
+    atw_slider_list('Number of pager thumbnails (Default: Thumbnails - 5 per row; Sliding Thumbnails - 6)');
+    atw_slider_list('Maximum Height for thumbnail images - can make better looking thumbnails with mixed height images');
+    atw_slider_list('Border around Thumbnail and Sliding Thumbnails pager images. (Transparent, so it will match slider bg color. Default:none)');
     atw_slider_list("Don't dim thumbnails for non-current image.");
-    atw_slider_list('Use Featured Image only for Thumbnails (when FI is defined). Featured Image will <em>not</em> be used for slider main image.');
+    atw_slider_list('Use Featured Image only for thumbnails (when FI is defined). Featured Image will <em>not</em> be used for slider main image.');
 
     echo '<br />';
 
@@ -81,6 +82,12 @@ function atw_slider_image_slider_layout() {
     atw_slider_subheader('Title and Caption Overlay', 'Change the visual impact');
     atw_slider_list('Overlay title over top of image (when Show Title also checked).');
     atw_slider_list('Overlay caption over bottom of image (when Show Caption also checked).');
+
+    atw_slider_subheader('Prev/Next Navigation', 'Change style and behavior of navigation arrows');
+    atw_slider_list( 'Show Prev/Next Navigation Arrows at top right corner of slider.');
+    atw_slider_list( 'Disable arrow "slide-in" effect.');
+    atw_slider_list( 'Always display navigation arrows.');
+    atw_slider_list( 'Select Navigation Arrow Graphic');
 ?>
   </p>
 
@@ -151,6 +158,8 @@ function atw_slider_show_misc_opts() {
     atw_slider_list('Show "Loading" spinner - useful if you have slide shows that take extra time to load. Applies to <em>all</em> sliders.');
 
     atw_slider_list('No [gallery]', 'Can avoid [gallery] within [gallery] issues.');
+
+    atw_slider_subheader('Per-Slider Custom CSS', 'Advanced option. Add per-slider custom CSS. See Help file for more information.');
 
 }
 
