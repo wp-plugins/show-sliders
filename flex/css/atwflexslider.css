@@ -385,11 +385,10 @@ body .atwkslider .slide-content {       /* .slide-content is all slides, on same
 }
 
 .atwkslider .atwk-control-thumbs li {
-    width: 20%;                         /* controls number of thumbs in thumbnail pager - should */
+    width: 16%;                         /* controls number of thumbs in thumbnail pager */
     float: left;
     margin: 0 !important;
     padding: 0px !important;
-
 }
 
 .atwkslider .atwk-control-thumbs img,
@@ -517,7 +516,7 @@ body .atwkslider .slide-content {       /* .slide-content is all slides, on same
     line-height: 18px;
     padding: 0px 0 2px 0;
     text-shadow: 1px 1px 1px black;       /* match the title, make a bit more readable */
-    max-width:100%;
+    max-width:90%;
     margin: 10px 5% 10px 5%;
     height: 17px;                          /* for all to be same hight - ugly otherwise 1.4 + .33 + .33 */
     overflow:hidden;

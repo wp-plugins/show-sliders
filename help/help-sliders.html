@@ -286,6 +286,7 @@ h1 {
 <ul>
 <li><a href="#basic_slider_steps">Basic Steps to Create a Posts Slider</a></li>
 <li><a href="#which_image">Which Image is Used for the Slide?</a></li>
+<li><a href="#paging_images">Paging Images</a></li>
 <li><a href="#header_slide_show">Add Slide Show to Header</a></li>
 <li><a href="#slider_styling">Slider Styling</a></li>
 <li><a href="#video">Video in Sliders (Pro)</a></li>
@@ -399,6 +400,14 @@ Getting the slider to display as a banner in your header is more complicated. Se
   <li><strong>Use Featured Image only for Thumbnails</strong> - If a Featured Image is defined for a post, it will <em>always</em> be used as the thumbnail image for a Thumbnail Pager. For the Pro version, there is an option that forces the Featured Image to be used only as a Thumbnail Pager image and not as the image for the slide. This option is necessary to allow the use of the Featured Image as a thumbnail for Video sides.<br />
   </li>
 </ol>
+<h3><a name="paging_images" id="paging_images"></a>Paging Images</h3>
+<p><em>ATW Show Sliders</em> supports four different kinds of paging for your single item slider - No paging, Paging dots, Thumbnails, and Sliding Thumbnails. The image used for thumbnails is automatically generated from the content that generates each slide.</p>
+<p>Thumbnails is laid out as a grid below the main slider image. Sliding Thumbnails are displayed in a Carousel pager right below the main image.</p>
+<p>Note: there currently is a glitch in the &quot;FlexSlider&quot; Javascript used by ATW Show Sliders with the Sliding Thumbnails implementation. When you &quot;wrap around&quot; from the last slide in the show, the pager slider does not update properly until the third slide is again displayed. This is a somewhat complex problem, and unfortunately we must wait for the FlexSlider author to fix this problem.</p>
+<p> Carousels can be used only with no paging or paging dots, in which case, each dot represents a &quot;page&quot; of images - however many images are displayed at once in the carousel.</p>
+<p>For images that originate from a [gallery], the pager thumbnail will be the Media Library thumbnail image associated with the main image. For an image slider with images contained in a Post, the Featured Image will be used as the pager image - if it is defined. Otherwise, the first image in the post is used. If no image is included, a default image is used for the pager.</p>
+<p>For &quot;Show Slider as Posts&quot;, the only option is to define a Featured Image for each post included in the post slider. If there is no Featured Image defined for a post, then a default image is used. The &quot;Thumbnails&quot; grid pager is <strong>not</strong> supported for Posts Sliders.</p>
+<p>Videos also require a Featured Image to define a pager image, but also requires that the  &quot;Use Featured Image only for Thumbnails&quot; option be checked. See the &quot;Video&quot; section below for more details.</p>
 <h3><a name="header_slide_show" id="header_slide_show"></a>Add Slide Show to Header</h3>
 <p>You might want to add a banner slider to your site's header area. If your theme allows you to insert shortcodes into the header area (such as <em>Weaver II</em> or <em>Aspen</em>), you should use that option. Otherwise,  you may have to add a PHP snippet to a file in your theme.</p>
 <p>If you can't add a shortcode to your header area, you will have to modify a file in your theme called &quot;header.php&quot;. This file contains the PHP code that defines the header of your site. While most anyone with a bit of experience can do this, you need to be comfortable playing with theme PHP files. But you should never edit a theme's files directly. Instead, you should always work with a child theme. </p>

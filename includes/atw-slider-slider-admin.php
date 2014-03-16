@@ -9,9 +9,11 @@ function atw_slider_slider_admin() {
    the <strong>[atw_slider name=slider-name]</strong> shortcode.</p>
     <form method="post">
         <input type="hidden" name="atw_slider_save_slider_opts" value="Slider Options Saved" />
+        <input style="display:none;" type="submit" name="atw_stop_enter" value="Ignore Enter"/>
 <?php
         atw_posts_nonce_field('atw_slider_save_slider_opts');
         atw_posts_nonce_field('atw_slider_save_slider_options');
+        // next input stops "Enter" on text fields from doing anything
 
         atw_slider_select_slider();
 
@@ -23,7 +25,6 @@ function atw_slider_slider_admin() {
         atw_posts_save_slider_button();
 
         atw_slider_pro_options();
-
 ?>
     </form>
 <?php
@@ -244,8 +245,8 @@ function atw_slider_save_slider_options() {
     $text_opts = array (
         'selected_slider_filter', 'content_type', 'slider_type', 'easing',
         'itemWidth', 'minItems', 'maxItems', 'move', 'startAt', 'slideshowSpeed', 'animationSpeed', 'initDelay',
-        'sliderColor',  'slideMargin', 'slider_post_slug', 'sliderPosition', 'sliderWidth', 'numberThumbs',
-        'borderThumbs',  'widthThumbs', 'maxImageHeight', 'postHeight',
+        'sliderColor',  'slideMargin', 'slider_post_slug', 'sliderPosition', 'sliderWidth', 'numberThumbs', 'maxHeightThumbs',
+        'borderThumbs',  'widthThumbs', 'maxImageHeight', 'postHeight', 'navArrows', 'sliderCustomCSS',
     );
 
     foreach ($text_opts as $opt) {
@@ -260,7 +261,7 @@ function atw_slider_save_slider_options() {
         'thumbCaptions', 'no_directionNav', 'video', 'pausePlay', 'no_allowOneSlide',  'showTitle', 'captionOverlay',
         'hideBorder', 'pausePlay', 'no_slideshow', 'showCaptions', 'showDescription', 'showLinks', 'fiOnlyforThumbs',
         'fullWidthImages', 'addImageBorder', 'no_pauseOnAction', 'no_pauseOnHover',  'directionVertical', 'titleOverlay',
-         'slidingAbove', 'noDimThumbs', 'inlineLink',
+         'slidingAbove', 'noDimThumbs', 'inlineLink', 'topNavArrows', 'alwaysShowArrows', 'disableArrowSlide',
     );
 
     foreach ($check_opts as $opt) {
@@ -302,8 +303,6 @@ function atw_slider_save_slider_options() {
         atw_posts_set_slider_opt('pager','dots');
 
 
-    // @@@@@@@@@@@@@@@@@@@@@@
-    // set CSS options to add the the custom CSS box
 
     atw_posts_save_all_options();    // and save them to db
     atw_posts_save_msg( 'Slider Options saved' );
@@ -404,9 +403,11 @@ function atw_slider_required_options() {
         <label for="pager">&nbsp;&nbsp;&nbsp;<input type="radio" name="pager" <?php checked($cur_pager, 'none'); ?> value="none">No Paging</label>
         <label for="pager">&nbsp;&nbsp;&nbsp;<input type="radio" name="pager" <?php checked($cur_pager, 'dots'); ?> value="dots">Paging dots</label>
         <br />
-        <strong style="padding-left:12em;">In addition, for Fader/Slider (one item) Sliders:</strong>
+        <strong style="padding-left:12em;">For Fader/Slider (one item) Image Sliders only:</strong>
         <label for="pager">&nbsp;&nbsp;&nbsp;<input type="radio" name="pager" <?php checked($cur_pager, 'thumbnails'); ?> value="thumbnails">Thumbnails </label>
         <label for="pager">&nbsp;&nbsp;&nbsp;<input type="radio" name="pager" <?php checked($cur_pager, 'sliding'); ?> value="sliding">Sliding Thumbnails</label>
+        <br />
+        <small style="padding-left:16em;">For "Show Slider as Posts": "Sliding Thumbnails" <em>require</em> Featured Image to be defined for each post. "Thumbnails" not supported.</small>
 
     </p>
 <?php
@@ -547,7 +548,7 @@ function atw_slider_subheader($header, $desc = '' ) {
     echo '<div style="padding-bottom:.3em;"><span style="color:#00a;font-weight:bold;font-style:italic;padding-left:1.5em;padding-right:1.5em;">' . $header . '</span>' . $desc . '</div>';
 }
 
-function atw_posts_slider_textarea($id, $desc, $br = '<br />', $cols = 32) {
+function atw_posts_slider_textarea($id, $desc, $br = '<br />', $cols = 32, $rows=1, $maxlength = 64) {
 
     $is_pro = false;
 
@@ -557,7 +558,7 @@ function atw_posts_slider_textarea($id, $desc, $br = '<br />', $cols = 32) {
     }
 ?>
     <span style="margin-top:5px;display:inline;padding-left:2.5em;"><label>
-    <textarea style="margin-bottom:-8px;" cols=<?php echo $cols; ?> rows=1 maxlength=64 name="<?php echo $id; ?>"><?php echo sanitize_text_field( atw_posts_get_slider_opt($id) ); ?></textarea>
+    <textarea style="margin-bottom:-8px;" cols=<?php echo $cols; ?> rows=<?php echo $rows;?> maxlength=<?php echo $maxlength; ?> name="<?php echo $id; ?>"><?php echo sanitize_text_field( atw_posts_get_slider_opt($id) ); ?></textarea>
     &nbsp;
 <?php   echo $desc . '</label></span>' . $br . "\n";
 }

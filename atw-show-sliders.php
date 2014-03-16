@@ -5,7 +5,7 @@ Plugin URI: http://aspenthemeworks.com/atw-show-sliders/
 Description: Aspen Themeworks Show Sliders - Show posts, images, and galleries displayed in a responsive slider with many options.
 Author: wpweaver
 Author URI: http://weavertheme.com/about/
-Version: 1.0.3
+Version: 1.0.8
 
 License: GPL
 
@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* CORE FUNCTIONS
 */
 
-define ( 'ATW_SLIDER_PI_VERSION','1.0.3');
+define ( 'ATW_SLIDER_PI_VERSION','1.0.8');
 define ( 'ATW_SLIDER_PI_PRO', false);            // change this and the Plugin Name above when building Pro version
 define ( 'ATW_SLIDER_PI_MINIFY','.min');		// '' for dev, '.min' for production
 
@@ -41,6 +41,7 @@ if (function_exists('atw_slider_installed')) {
 // ===============================>>> REGISTER ACTIONS <<<===============================
 
     add_action( 'plugins_loaded', 'atw_slider_plugins_loaded');
+    add_action( 'atw_show_sliders_post_pager','atw_slider_post_pager');
 
 // ===============================>>> DEFINE ACTIONS <<<===============================
 
@@ -60,6 +61,15 @@ if ( function_exists('atw_showposts_installed') ) {
         add_action( 'add_meta_boxes', 'atw_slider_add_meta_box' );
         add_action( 'wp_enqueue_scripts', 'atw_slider_enqueue_scripts' );
         add_action( 'wp_footer','atw_slider_the_footer', 9);	// make it 9 so we can dequeue scripts
+        if ( ATW_SLIDER_PI_PRO ) {
+            add_action( 'admin_enqueue_scripts','atw_slider_add_admin_scripts');
+
+            function atw_slider_add_admin_scripts() {
+                wp_enqueue_script('atw-combined-scripts',
+                    atw_slider_plugins_url('/includes/pro/js/jquery.ddslick', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+                    ATW_SLIDER_PI_VERSION, true);
+            }
+        }
 
 
 // ========================================= >>> atw_slider_register_post_cpt <<< ===============================
@@ -405,9 +415,6 @@ function atw_slider_get_gallery( $content, $slider, $ids = array(), $lead_class=
     if ( $content != ''
         && !atw_posts_get_slider_opt('noGallery', $slider)       // skip looking for [gallery]
         && preg_match( '/\[gallery(.*?)\]/i', $content, $sc)) {  // find the first [gallery]  ************************
-
-
-
         // sc[0] = full match
         // sc[1] = content of [gallery];
         $attr = shortcode_parse_atts( $sc[1] );
@@ -430,8 +437,6 @@ function atw_slider_get_gallery( $content, $slider, $ids = array(), $lead_class=
         foreach ($attachments as $attachment => $attachment_obj) {
             $gallery .= atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lead_div, $gal_link);   // adeach image
         }
-
-
 
     } else if ($content == '' && !empty($ids) ) {        // we got passed a list of attachment images  *********************
         $gal_link = '';
@@ -504,7 +509,7 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
                 $attachment_link = get_permalink( get_the_ID() );       // link is to post
             }
         } else {
-            $attachment_link = get_attachment_link( $attachment_id );
+            $attachment_link = home_url( '/?attachment_id=' . $attachment_id );
             if ( $attachment_link == '' || $gal_link == 'file' )
                 $attachment_link = $src;    // just use raw link if not available
         }
@@ -658,6 +663,31 @@ function atw_slider_set_pager_img( $id, $src, $lead_class, $lead_div, $slider ) 
 
 }
 
+// ====================================== >>> atw_slider_post_pager <<< ======================================
+function atw_slider_post_pager($slider) {
+
+    if ( atw_posts_get_slider_opt( 'pager', $slider ) != 'sliding')
+        return;
+
+    $id = get_the_ID();
+    $thumbnail = image_downsize($id, 'thumbnail');
+
+    $img = $thumbnail[0];
+    if ( $img == '' ) {     // not at the first level
+        if (has_post_thumbnail()) {
+            $attachment_obj = get_post( get_post_thumbnail_id( ) );
+            if (!empty( $attachment_obj )) {
+                $attachment_id = $attachment_obj->ID;
+                $thumbnail = image_downsize($attachment_id, 'thumbnail');
+                $img = $thumbnail[0];
+            }
+        }
+    }
+    if ( $img == '' )
+        $img = plugins_url('images/post-pager.png', __FILE__);
+    $GLOBALS['atw_slider_thumbs'][] = $img;
+}
+
 // ====================================== >>> atw_slider_body_classes <<< ======================================
 
 function atw_slider_body_classes( $classes ) {
@@ -670,6 +700,13 @@ if ( function_exists('atw_posts_getopt') && atw_posts_getopt('showLoading')) {
     }
 
 
+
+// =============================>>> DEFINE UPDATES - Pro Only, but code must be here <<<============================
+if ( ATW_SLIDER_PI_PRO ) {
+		// load our custom updater
+		require_once ( dirname( __FILE__ ) . '/includes/pro/atw-slider-pro-license.php' );
+
+}
 // ====================================== >>> atw_slider_kill_header_image <<< ======================================
 
 /* function atw_slider_kill_header_image($args = '') {
@@ -723,7 +760,9 @@ function atw_slider_admin_scripts() {
 
 }
 
-require_once((dirname( __FILE__ ) . '/includes/atw-activate-show-posts.php'));
+if (current_user_can('activate_plugins')) {
+    require_once((dirname( __FILE__ ) . '/includes/atw-activate-show-posts.php'));
+}
 
 }   // end Show Posts not installed
 }   // end of plugins_loaded action

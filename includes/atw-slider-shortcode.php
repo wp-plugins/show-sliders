@@ -88,7 +88,7 @@ function atw_slider_shortcode( $args = '' ) {
     } elseif ($slider_post_slug != '') {
         $content .= atw_slider_show_slider_post( $name, $slider_post_slug);     // if has slider_post specified explicitly
     }
-    else {
+    else {              // posts slider
         $content .= atw_show_posts_sc(array( 'slider' => $name, 'filter' => $filter));  // use filter
     }
 
@@ -171,12 +171,20 @@ function atw_slider_emit_css( $name ) {
     if (atw_posts_get_slider_opt( 'addImageBorder', $name ))
         $img_class = '.slide-image-border';
 
-    $margin = atw_posts_get_slider_opt( 'slideMargin', $name );   // margin around changed
+    $margin = atw_posts_get_slider_opt( 'slideMargin', $name );   // margin around
+
     if ( $margin != '' ) {
-        $margin .= 'px';        // add em units
-        $css .= $my_class . ' .slides .atwk-slide ' . $img_class . ' .atwk-title-overlay{left:' . $margin . '!important;top:' . $margin . "!important;}\n";
-        $css .= $my_class . ' .atwk-caption-overlay{right:' . $margin . '!important;bottom:' . $margin . "!important;}\n";
-        $css .= $my_class . ' .slide-content{margin:' . $margin . "!important;}\n";
+        $css .= $my_class . ' .slides .atwk-slide ' . $img_class . ' .atwk-title-overlay{left:' . $margin
+             . 'px!important;top:' . $margin . "px!important;}\n";
+        $css .= $my_class . ' .atwk-caption-overlay{right:' . $margin . 'px!important;bottom:' . $margin . "px!important;}\n";
+        $css .= $my_class . ' .slide-content{margin:' . $margin . "px!important;}\n";
+        if ( !atw_posts_get_slider_opt( 'topNavArrows', $name ) ) {     // topNavArrows code will adjust left/right if it is used
+            $next = $margin;
+            $prev = $next;
+
+            $css .= $my_class . ':hover .atwk-prev {left:' . $prev . 'px;}';
+            $css .= $my_class . ':hover .atwk-next {right: ' . $next . 'px;}';
+        }
     }
 
     if ( atw_posts_get_slider_opt('showDescription',$name) ) {  // we might show description
@@ -250,6 +258,14 @@ function atw_slider_emit_css( $name ) {
         $css .= $my_class . sprintf(" .atwk-control-thumbs li {width: %.3f%%;}\n", $percent);
     }
 
+    if ( atw_posts_get_slider_opt( 'maxHeightThumbs', $name) ) {
+        $max_h = atw_posts_get_slider_opt( 'maxHeightThumbs', $name);
+        $css .= $my_class . ' .atwk-control-thumbs li{max-height:' . $max_h . "px;overflow:hidden;}\n";
+        $css .= $my_class . '-thumbs .atwk-slide{max-height:' . $max_h . "px;overflow:hidden;}\n";
+    }
+
+
+
     if ( atw_posts_get_slider_opt( 'borderThumbs', $name ) ) {
         $bwidth = atw_posts_get_slider_opt( 'borderThumbs', $name );
         $css .= $my_class . ' .atwk-control-thumbs img,' . $my_class . '-thumbs .slides .atwk-slide img{border:' . $bwidth . "px solid transparent;}\n";
@@ -269,9 +285,74 @@ function atw_slider_emit_css( $name ) {
         $css .= $my_class . '.atwkslider{margin-bottom:0;}';
     }
 
+    if (atw_posts_get_slider_opt( 'disableArrowSlide', $name) ) {   // before alwaysShowArrows & topNavArrows
+        if ($margin == '')
+            $margin = 5;
+        $next = $margin - 5;
+        $prev = $next;
+        $css .= $my_class . ' .atwk-direction-nav .atwk-next{background-position: 100% 0;right:' . $next . 'px;}';
+        $css .= $my_class . ' .atwk-direction-nav .atwk-prev{left:' . $prev . 'px;}';
+
+        $css .= $my_class . '-thumbs .atwk-direction-nav .atwk-prev{left:0px;}';
+        $css .= $my_class . '-thumbs .atwk-direction-nav .atwk-next{right:0px;}';
+    }
+
+    if ( atw_posts_get_slider_opt( 'alwaysShowArrows', $name) ) {
+        if ($margin == '')
+            $margin = 5;
+        $next = $margin - 5;
+        $prev = $next;
+        $css .= $my_class . ' .atwk-direction-nav .atwk-next{opacity:1;right:' . $next . 'px;}';
+        $css .= $my_class . ' .atwk-direction-nav .atwk-prev{opacity:1;left:' . $prev . 'px;}';
+        $css .= $my_class . ':hover .atwk-prev{opacity:.8;left:' . $prev . 'px;}';
+        $css .= $my_class . ':hover .atwk-next{opacity:.8;right: ' . $next . 'px;}';
+
+        $css .= $my_class . '-thumbs .atwk-direction-nav .atwk-prev{opacity:1;left:0px;}';
+        $css .= $my_class . '-thumbs .atwk-direction-nav .atwk-next{opacity:1;right:0px;}';
+        $css .= $my_class . '-thumbs:hover .atwk-prev{opacity:.8;left:0px;}';
+        $css .= $my_class . '-thumbs:hover .atwk-next{opacity:.8;right:0px;}';
+    }
+
+
+
+    if ( atw_posts_get_slider_opt( 'topNavArrows', $name ) ) {    // top right nav
+        if ($margin == '')
+            $margin = 5;
+
+        $next = $margin - 5;
+        $prev = $next + 55;
+
+        if ( atw_posts_get_slider_opt( 'showTitle', $name) && !atw_posts_get_slider_opt('titleOverlay', $name ) ) {
+            $top = 13;
+        } else {
+            $top = 16 + $margin;
+        }
+        $css .= $my_class . ' .atwk-direction-nav a {top:' . $top . 'px;}';
+        $css .= $my_class . ' .atwk-direction-nav .atwk-next {opacity:1;right:' . $next . 'px;}';
+        $css .= $my_class . ' .atwk-direction-nav .atwk-prev {opacity:1;right:' . $prev . 'px;left:auto;}';
+        $css .= $my_class . ':hover .atwk-prev {opacity:.8;right:' . $prev . 'px;left:auto;}';
+        $css .= $my_class . ':hover .atwk-next {opacity:.8;right: ' . $next . 'px;}';
+    }
+
+    if ( atw_posts_get_slider_opt( 'navArrows', $name ) != '' ) {
+        $arrow = atw_posts_get_slider_opt( 'navArrows', $name );
+        $src = atw_slider_plugins_url('/flex/images/nav-') . $arrow . '.png';
+
+        $css .= $my_class . ' .atwk-direction-nav a,' . $my_class
+             . '-thumbs .atwk-direction-nav a {background:url(' . $src . ') no-repeat 0 0;}';
+        $css .= $my_class . ' .atwk-direction-nav .atwk-next,' . $my_class
+             . '-thumbs .atwk-direction-nav .atwk-next  {background-position: 100% 0;}';
+    }
+
+    // finally, the per slider custom CSS
+    $custom_css = atw_posts_get_slider_opt('sliderCustomCSS',$name);
+    if ($custom_css != '') {
+        $css .= "\n" . str_replace('.this-slider', $my_class, $custom_css);
+    }
+
 
     if ( $css )
-        return $lead . $css . "</style>\n";
+        return $lead . $css . "\n</style>\n";
     else
         return '';
 }
@@ -346,6 +427,7 @@ function atw_slider_do_footer() {
         atw_slider_echo_opt_tf( 'no_slideshow', $name, false );
         atw_slider_echo_opt_tf( 'no_animationLoop', $name, false );
 
+
         if ( $slider_type == 'slider' && atw_posts_get_slider_opt ( 'directionVertical', $name) != '' )
             echo 'direction:"vertical",';
 
@@ -362,10 +444,10 @@ function atw_slider_do_footer() {
         // atw_slider_echo_opt_tf( 'no_allowOneSlide', $name );
 
 
-        atw_slider_echo_opt_text( 'startAt', $name );
-        atw_slider_echo_opt_text( 'slideshowSpeed', $name, 5000 );  /* change default to 5 seconds - 7 is too long */
-        atw_slider_echo_opt_text( 'animationSpeed', $name );
-        atw_slider_echo_opt_text( 'initDelay', $name );
+        atw_slider_echo_opt_val( 'startAt', $name );
+        atw_slider_echo_opt_val( 'slideshowSpeed', $name, 5000 );  /* change default to 5 seconds - 7 is too long */
+        atw_slider_echo_opt_val( 'animationSpeed', $name );
+        atw_slider_echo_opt_val( 'initDelay', $name );
 
         if ( atw_posts_getopt('showLoading') ) {
             echo "start: function(slider){jQuery('body').removeClass('atwkloading');}});\n";

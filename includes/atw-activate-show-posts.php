@@ -6,9 +6,10 @@
  * Add plugin automation file
  */
 
+
 require_once( dirname( __FILE__ ) . '/class-tgm-plugin-activation.php' );
 
-function atw_slider_install_plugins() {
+function atw_slider_install_tgm_plugins() {
 
 
 	$plugins = array(
@@ -70,7 +71,7 @@ function atw_slider_install_plugins() {
 }
 
 
-add_action( 'tgmpa_register', 'atw_slider_install_plugins' );
+add_action( 'tgmpa_register', 'atw_slider_install_tgm_plugins' );
 
 
 ?>
