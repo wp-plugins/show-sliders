@@ -21,7 +21,7 @@ function atw_slider_shortcode( $args = '' ) {
 
     if ( !function_exists( 'atw_showposts_installed')) {
         unset($GLOBALS['atw_slider_recursion']);
-        return '<strong>ERROR with [atw_slider name="' . $name . '"]: Aspen Themeworks Show Posts Plugin not installed.</strong>';
+        return '<strong>ERROR with [atw_slider name="' . $name . '"]: Weaver Show Posts Plugin not installed.</strong>';
     }
 
     if ( $name != 'default' && ($name == '' || atw_posts_get_slider_opt( 'name', $name ) == '') ) {
@@ -59,7 +59,7 @@ function atw_slider_shortcode( $args = '' ) {
 
     if ( !isset($GLOBALS['atw_slider_names' . $name]) ) {
         $GLOBALS['atw_slider_names' . $name] = 1;       // first time for this slider
-        $prestyle .= atw_slider_emit_css( $name );          // emit inline CSS for this slider
+        $prestyle .= atw_slider_emit_css( $name );      // emit inline CSS for this slider
     } else {
         $GLOBALS['atw_slider_names' . $name]++;         // bump slider
     }
@@ -79,7 +79,7 @@ function atw_slider_shortcode( $args = '' ) {
 
 
     $lead .= '<div id="' . $id . '" class="atwkslider ' . $class_name . $content_type . $carousel . '"><div class="slides">' . "\n";
-    $tail = "</div></div><!-- atwslider -->\n";
+    $tail = "</div></div><div style='clear-both'></div><!-- atwslider -->\n";
 
     $slider_post_slug = atw_posts_get_slider_opt( 'slider_post_slug', $name);
 
@@ -92,7 +92,7 @@ function atw_slider_shortcode( $args = '' ) {
         $content .= atw_show_posts_sc(array( 'slider' => $name, 'filter' => $filter));  // use filter
     }
 
-    // add slider thmumnail - above or below
+    // add slider thumbnail - above or below
 
     $sliding = '';
     if (atw_posts_get_slider_opt('pager', $name) == 'sliding' && !empty($GLOBALS['atw_slider_thumbs'])) {
@@ -156,7 +156,7 @@ function atw_slider_show_slider_gallery ( $slider, $ids ) {
         return $content;
 
     }
-    return '<strong>ATW [gallery] improperly set up. Must specify Slider with content type Images.</strong>';
+    return '<strong>Weaver [gallery] improperly set up. Must specify Slider with content type Images.</strong>';
 }
 
 // ========================================= >>> atw_slider_emit_css <<< ===============================
@@ -360,7 +360,7 @@ function atw_slider_emit_css( $name ) {
 // ========================================= >>> atw_slider_do_footer <<< ===============================
 
 function atw_slider_do_footer() {
-    echo "<!-- ATW Slider -->\n";
+    echo "<!-- Weaver Slider -->\n";
 
     if ( !isset($GLOBALS['atw_sliders_count']) ) {   // did we have sliders?
         return;
@@ -456,6 +456,10 @@ function atw_slider_do_footer() {
         }
 
     }
+	if ( atw_posts_getopt( 'showLightbox')) {
+		echo "jQuery('img.atw-gallery-img').featherlight({targetAttr:'src',closeIcon:'<strong>&otimes;</strong>'});\n";
+	}
+
 
     echo '});</script>'. "\n";
 

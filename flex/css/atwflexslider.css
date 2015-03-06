@@ -5,8 +5,8 @@
  * Copyright 2012 WooThemes
  * Free to use under the GPLv2 license.
  *
- * This stylesheet is the default ATW Slider stylesheet.
- * Copyright 2014 Aspen Themeworks
+ * This stylesheet is the default Weaver Slider stylesheet.
+ * Copyright 2014 Weaver
  * It has been modified to use the 'atwk' namespace to help avoid conflicts with other themes using FlexSlider
  *
  */
@@ -404,7 +404,7 @@ body .atwkslider .slide-content {       /* .slide-content is all slides, on same
     width: 100%;
     max-width:100%;
     display: block;
-    opacity: .75;
+    opacity: .65;
     cursor: pointer;
     padding:0;
     margin:0 !important;
@@ -413,7 +413,7 @@ body .atwkslider .slide-content {       /* .slide-content is all slides, on same
 
 .atwk-content-thumbs img,
 .atwk-content-thumbs-above img {      /* opacity for siding pager images */
-    opacity: .75;
+    opacity: .65;
 }
 
 .atwk-content-thumbs .atwk-active-slide img,
@@ -557,7 +557,7 @@ body .atwkslider .slide-content {       /* .slide-content is all slides, on same
 .atwk-direction-nav .atwk-next { opacity: 1; right: 10px;}
 }
 @media screen and (max-width: 640px) {
-.atwkslider .atwk-descriptionl
+.atwkslider .atwk-description
 .atwkloading {
     display:none;
 }

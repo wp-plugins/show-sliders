@@ -973,7 +973,6 @@ if ( ! function_exists( 'tgmpa' ) ) {
 	function tgmpa( $plugins, $config = array() ) {
 
 		foreach ( $plugins as $plugin ) {
-            //echo "<pre>"; print_r($plugin); echo '</pre>';
 			TGM_Plugin_Activation::$instance->register( $plugin );
 		}
 

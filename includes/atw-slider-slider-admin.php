@@ -7,7 +7,8 @@ function atw_slider_slider_admin() {
    <p>You can define multiple sliders. Each slider can be be a single pane slider, or a carousel. Slider content can be images or posts.
    You must also define a Filter on the Filter tab to select which posts are used for the filter content. Then insert the slider using
    the <strong>[atw_slider name=slider-name]</strong> shortcode.</p>
-    <form method="post">
+        <form method="post" enctype="multipart/form-data">
+
         <input type="hidden" name="atw_slider_save_slider_opts" value="Slider Options Saved" />
         <input style="display:none;" type="submit" name="atw_stop_enter" value="Ignore Enter"/>
 <?php
@@ -44,10 +45,10 @@ function atw_slider_gallery_admin_page() {
 ?>
    <h2 style="color:blue;">[gallery] Replacement</h2>
    <p>
-    ATW Show Sliders can serve as a replacement for the standard [gallery] shortcode. If you enable this option,
+    Weaver Show Sliders can serve as a replacement for the standard [gallery] shortcode. If you enable this option,
     then <em>all</em> places you use a [gallery] shortcode in a standard post or page will be displayed as a slider.
    </p>
-    <form method="post">
+        <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="atw_slider_save_gallery_opts" value="Slider Options Saved" />
 <?php
         atw_posts_nonce_field('atw_slider_save_gallery_opts');
@@ -81,10 +82,25 @@ function atw_slider_gallery_admin_page() {
     ignore any options related to Posts.
 </p>
 
-    <input style="margin-bottom:5px;" class="button-primary" type="submit" name="atw_slider_save_gallery_options" value="Save Gallery Options"/>
+<h2 style="color:blue;">Use Lightbox</h2>
+<p>
+Weaver Show Posts can add a pop-up Lightbox to your slider images. When this option is checked, the visitor will
+be able to show a fullsize view of the slider image in a Lightbox. This option applies to <em>all</em> sliders.
+</p>
+<div style="display:inline;padding-left:2.5em;text-indent:-1.7em;"><label><input type="checkbox" name="showLightbox" id="showLightbox"
+        <?php checked(atw_posts_getopt('showLightbox') ); ?> >&nbsp;Enable Lightbox.</label></div>
+
+<p>
+	&nbsp;
+</p>
+
+    <input style="margin-bottom:5px;" class="button-primary" type="submit" name="atw_slider_save_gallery_options" value="Save Gallery / Lightbox Options"/>
 
     </form>
+
 <?php
+echo '<pre>'; print_r(get_option('atw_posts_settings' ,array())); echo '</pre>';
+
 }
 
 // ========================================= >>> atw_slider_submits <<< ===============================
@@ -92,8 +108,10 @@ function atw_slider_gallery_admin_page() {
 function atw_slider_submits() {
 
     $actions = array( 'atw_slider_delete_slider', 'atw_slider_new_slider',
-                     'atw_slider_save_slider_options', 'atw_slider_header_slider', 'atw_slider_save_gallery_options'
+                     'atw_slider_save_slider_options', 'atw_slider_header_slider', 'atw_slider_save_gallery_options',
+					 'atw_sliders_restore_filter'
         );
+
 
     // need to respond to onchange="this.form.submit()" for 'selected_slider'
     if (atw_posts_get_POST( 'selected_slider')) {
@@ -114,7 +132,7 @@ function atw_slider_submits() {
         }
     }
 
-    do_action('atw_slider_process_license_options');    // process license options
+    //do_action('atw_slider_process_license_options');    // process license options
 }
 
 function atw_slider_set_to_slider() {
@@ -230,6 +248,11 @@ function atw_slider_save_gallery_options() {
         atw_posts_setopt( 'gallery_slider', '' );
     }
 
+	if (atw_posts_get_POST('showLightbox') != '')      // [gallery] settings need own processing...
+        atw_posts_setopt( 'showLightbox', true );
+    else
+        atw_posts_setopt( 'showLightbox', false );
+
 
     atw_posts_save_all_options();    // and save them to db
     atw_posts_save_msg( '[gallery] Replacement Options saved' );
@@ -246,7 +269,7 @@ function atw_slider_save_slider_options() {
         'selected_slider_filter', 'content_type', 'slider_type', 'easing',
         'itemWidth', 'minItems', 'maxItems', 'move', 'startAt', 'slideshowSpeed', 'animationSpeed', 'initDelay',
         'sliderColor',  'slideMargin', 'slider_post_slug', 'sliderPosition', 'sliderWidth', 'numberThumbs', 'maxHeightThumbs',
-        'borderThumbs',  'widthThumbs', 'maxImageHeight', 'postHeight', 'navArrows', 'sliderCustomCSS',
+        'borderThumbs',  'widthThumbs', 'maxImageHeight', 'postHeight', 'navArrows',
     );
 
     foreach ($text_opts as $opt) {
@@ -254,6 +277,11 @@ function atw_slider_save_slider_options() {
         atw_posts_set_slider_opt( $opt, $val );
     }
 
+    if ( atw_posts_get_POST( 'sliderCustomCSS' ) != '' ) {  // custom per-slider CSS
+
+        if ( current_user_can('unfiltered_html') )
+            atw_posts_set_slider_opt('sliderCustomCSS', wp_check_invalid_utf8( trim(atw_posts_get_POST( 'sliderCustomCSS' )) ) );
+    }
 
     // **** check boxes
     $check_opts = array (
@@ -330,11 +358,15 @@ function atw_slider_select_slider() {
 <?php
 
     $sliders = atw_posts_getopt('sliders');
+	$cur_slug = '';
+	$cur_name = '';
 
     echo '<table><tr><td><strong>Select Slider:&nbsp; </strong></td><td><select onchange="this.form.submit()" name="selected_slider" >';
     foreach ($sliders as $slider => $val) {     // display dropdown of available sliders
         if ($slider == $current_slider) {
             echo '<option value="'. $slider . '" selected="selected">' . $val['name'] . ' (' . $slider . ')</option>';
+			$cur_slug = $slider;
+			$cur_name = $val['name'];
         } else {
             echo '<option value="'. $slider . '">' . $val['name'] .  ' (' . $slider . ')</option>';
         }
@@ -351,6 +383,18 @@ function atw_slider_select_slider() {
     &larr; <input class="button" type="submit" name="atw_slider_new_slider" value="Create New Slider"/>
     </td>
     </tr></table>
+
+	<?php
+	if (function_exists('atw_posts_download_link')) {
+		$time = date('Y-m-d-Hi');
+		atw_posts_download_link('<strong>Save Settings</strong> for current slider <strong>' . $cur_name . '</strong>.',
+			$cur_slug, 'slider', $time );
+	}
+?>
+<input style="margin-left:8em;" class="download-link" type="submit" name="atw_sliders_restore_filter" value="Restore Slider" />
+	<span style="border:1px solid #CCC;width:400px;padding:2px;"><input name="slideruploaded" type="file" /></span>
+	<input type="hidden" name="suploadit" value="yes" />- Upload file to restore a Slider
+<br /><br />
     <span style="margin-left:2em;"><strong>HINT:</strong> You can create Sliders and Filters with the same name and use them together.</span>
 
     <div style="clear:both;"></div>
@@ -358,6 +402,7 @@ function atw_slider_select_slider() {
 atw_posts_nonce_field('atw_slider_set_to_slider');
 atw_posts_nonce_field('atw_slider_delete_slider');
 atw_posts_nonce_field('atw_slider_new_slider');
+atw_posts_nonce_field('atw_sliders_restore_filter');
 
 atw_slider_end_section();
 
@@ -485,23 +530,25 @@ function atw_slider_required_options() {
     atw_slider_subheader( 'Navigation', 'Navigation, autostart, linking');
 
     atw_posts_slider_checkbox( 'no_directionNav', 'No previous/next navigation buttons');
-    atw_posts_slider_checkbox( 'no_slideshow', 'Don\'t autostart animation (ignored for Carousel)');
+    atw_posts_slider_checkbox( 'no_slideshow', 'Don\'t autostart animation');
     atw_posts_slider_checkbox( 'pausePlay', '+Show pause/play button.');
-    atw_posts_slider_checkbox( 'showLinks', 'Add links to images in Image Slider (Depends on source: link to post if from post, link to Attachment if from [gallery]',
-                              '<br /><br />');
-
+    atw_posts_slider_checkbox( 'showLinks', 'Add links to images in Image Slider. Note that if the Lightbox is enabled, these links will not be used. (Depends on source: link to post if from post, link to Attachment if from [gallery])','<br /><br />');
 
     atw_slider_subheader('Title, Caption, Description', 'Caption and Description from media library values; Title from Post; or Media Library if using [gallery]');
 
-    atw_posts_slider_checkbox( 'showTitle', 'Show image Title','');
+    atw_posts_slider_checkbox( 'showTitle', 'Show image Title','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+	atw_posts_slider_checkbox( 'titleOverlay', '+Overlay title over top of image (when Show Title also checked).','<br />');
     atw_posts_slider_checkbox( 'showCaptions', 'Show image Caption','');
+	atw_posts_slider_checkbox( 'captionOverlay', '+Overlay caption over bottom of image (when Show Caption also checked).','<br />');
     atw_posts_slider_checkbox( 'showDescription', 'Show image Description','<br /><br />');
+
 
 
     atw_slider_subheader('Background, Borders', '');
     atw_posts_slider_val( 'sliderColor', 'Color for Slider BG (Default: transparent)', 'Hex value (#000), rgba(), or standard HTML color name - ', '12em' );
 
     atw_posts_slider_val( 'slideMargin', 'Border width around Slider; space between Carousel slides (Defaults: Posts=15px, Images=5px)', 'px' );
+	atw_posts_slider_checkbox( 'addImageBorder', '+Add "photo" border around images.','<br />');
     atw_posts_slider_checkbox( 'hideBorder', 'Hide the border shadow around Slider (This is independent of the Border Width.)','');
 
     atw_slider_end_section();
@@ -556,9 +603,18 @@ function atw_posts_slider_textarea($id, $desc, $br = '<br />', $cols = 32, $rows
         $desc = str_replace( '+', '', $desc );
         $is_pro = true;
     }
+
+    $text = atw_posts_get_slider_opt($id);
+
+    if ($rows > 1) {
+        $lines = count (explode(PHP_EOL, $text));
+        if ($lines > 16)
+            $lines = 14;
+        $rows = $lines + 2;
+    }
 ?>
     <span style="margin-top:5px;display:inline;padding-left:2.5em;"><label>
-    <textarea style="margin-bottom:-8px;" cols=<?php echo $cols; ?> rows=<?php echo $rows;?> maxlength=<?php echo $maxlength; ?> name="<?php echo $id; ?>"><?php echo sanitize_text_field( atw_posts_get_slider_opt($id) ); ?></textarea>
+    <textarea style="margin-bottom:-8px;max-width:90%;" cols=<?php echo $cols; ?> rows=<?php echo $rows;?> maxlength=<?php echo $maxlength; ?> name="<?php echo $id; ?>"><?php echo esc_attr( $text ); ?></textarea>
     &nbsp;
 <?php   echo $desc . '</label></span>' . $br . "\n";
 }
@@ -577,5 +633,84 @@ function atw_posts_slider_val($id, $desc, $units = '', $width = '60px',  $br = '
     <div style = "margin-top:0px;display:inline-block;padding-left:4em;text-indent:-1.7em;"><label>
     <input class="regular-text" type="text" style="width:<?php echo $width;?>;height:22px;" name="<?php echo $id; ?>" value="<?php echo sanitize_text_field( atw_posts_get_slider_opt($id) ); ?>" />
 <?php   echo $units . '&nbsp;&nbsp;&nbsp;' . $desc . '</label></div>' . $br . "\n";
+}
+
+
+
+function atw_sliders_restore_filter() {
+	if (!(isset($_POST['suploadit']) && $_POST['suploadit'] == 'yes')) return;
+
+    // upload theme from users computer
+	// they've supplied and uploaded a file
+
+	$ok = true;     // no errors so far
+
+	if (isset($_FILES['slideruploaded']['name']))
+		$filename = $_FILES['slideruploaded']['name'];
+	else
+		$filename = "";
+
+	if (isset($_FILES['slideruploaded']['tmp_name'])) {
+		$openname = $_FILES['slideruploaded']['tmp_name'];
+	} else {
+		$openname = "";
+	}
+
+	//Check the file extension
+	$check_file = strtolower($filename);
+	$pat = '.';				// PHP version strict checking bug...
+	$end = explode($pat, $check_file);
+	$ext_check = end($end);
+
+
+	if ($filename == "") {
+		$errors[] = 'You didn\'t select a file to upload.' . "<br />";
+		$ok = false;
+	}
+
+	if (!$ok) {
+		echo '<div id="message" class="updated fade"><p><strong><em style="color:red;">' .
+		'ERROR' . '</em></strong></p><p>';
+		foreach($errors as $error){
+			echo $error.'<br />';
+		}
+		echo '</p></div>';
+	} else {    // OK - read file and save to My Saved Theme
+		// $handle has file handle to temp file.//
+		$contents = file_get_contents($openname);
+
+		if ( ! atw_slider_set_to_serialized_values($contents) ) {
+				echo '<div id="message" class="updated fade"><p><strong><em style="color:red;">' .
+'Sorry, there was a problem uploading your file.
+The file you picked was not a valid Weaver Show Sliders settings file.' .
+'</em></strong></p></div>';
+		} else {
+			atw_posts_save_msg( 'Weaver Show Sliders set to uploaded Slider.' );
+		}
+	}
+}
+
+function atw_slider_set_to_serialized_values($contents) {
+
+	$restore = unserialize($contents);
+
+	if (!isset($restore['cur_slider']))
+		return false;
+
+	$current_slider = $restore['cur_slider'];
+
+	if (!isset($restore[$current_slider]))
+		return false;
+
+	atw_posts_setopt('current_slider', $current_slider);
+
+	global $atw_posts_opts_cache;
+
+    unset($atw_posts_opts_cache['sliders'][$current_slider]);
+
+    $atw_posts_opts_cache['sliders'][$current_slider]= $restore[$current_slider];
+    atw_posts_wpupdate_option('atw_posts_settings',$atw_posts_opts_cache);
+
+	return true;
 }
 ?>
