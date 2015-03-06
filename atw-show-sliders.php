@@ -1,16 +1,16 @@
 <?php
 /*
-Plugin Name: ATW Show Sliders
-Plugin URI: http://aspenthemeworks.com/atw-show-sliders/
-Description: Aspen Themeworks Show Sliders - Show posts, images, and galleries displayed in a responsive slider with many options.
+Plugin Name: Weaver Show Sliders
+Plugin URI: http://weavertheme.com/plugins/
+Description: Weaver Show Sliders - Show posts, images, and galleries displayed in a responsive slider with many options. Now includes former Pro features!
 Author: wpweaver
 Author URI: http://weavertheme.com/about/
-Version: 1.0.8
+Version: 1.2
 
 License: GPL
 
-Aspen Themeworks Show Sliders
-Copyright (C) 2014, Bruce E. Wampler - aspen@aspenthemeworks.com
+Weaver Show Sliders
+Copyright (C) 2014-2015, Bruce E. Wampler - weaver@weavertheme.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* CORE FUNCTIONS
 */
 
-define ( 'ATW_SLIDER_PI_VERSION','1.0.8');
-define ( 'ATW_SLIDER_PI_PRO', false);            // change this and the Plugin Name above when building Pro version
-define ( 'ATW_SLIDER_PI_MINIFY','.min');		// '' for dev, '.min' for production
+define ( 'WEAVER_SLIDER_PI_VERSION','1.2');
+define ( 'WEAVER_SLIDER_PI_PRO', true);            // change this and the Plugin Name above when building Pro version
+define ( 'WEAVER_SLIDER_PI_MINIFY','.min');		// '' for dev, '.min' for production
 
 if (function_exists('atw_slider_installed')) {
-    wp_die('Both ATW Show Sliders and ATW Show Sliders Pro installed. You can only activate one version or the other!','You can have only one activated version of ATW Show Sliders!');
+    wp_die('Both Weaver Show Sliders and Weaver Show Sliders Pro installed. You can only activate one version or the other!','You can have only one activated version of Weaver Show Sliders!');
 }
 
 // ===============================>>> REGISTER ACTIONS <<<===============================
@@ -50,35 +50,52 @@ function atw_slider_plugins_loaded() {
     // we really don't define any Show Sliders stuff until all the plugins have been installed
 
 
-if ( function_exists('atw_showposts_installed') ) {
+$show_posts = false;
+if ( function_exists('atw_showposts_installed') ) {			// for simple case where show_posts gets installed first
+	$show_posts = true;
+} else {
+	include_once (ABSPATH . 'wp-admin/includes/plugin.php');	// need this for is_plugin_active
+	$show_posts = is_plugin_active('show-posts/atw-show-posts.php');
+}
 
-        function atw_slider_installed() {
-            return true;
-        }
+if ( $show_posts )  {
 
-        add_action( 'init', 'atw_slider_register_post_cpt' );
-        add_action( 'init', 'atw_slider_setup_shortcodes');
-        add_action( 'add_meta_boxes', 'atw_slider_add_meta_box' );
-        add_action( 'wp_enqueue_scripts', 'atw_slider_enqueue_scripts' );
-        add_action( 'wp_footer','atw_slider_the_footer', 9);	// make it 9 so we can dequeue scripts
-        if ( ATW_SLIDER_PI_PRO ) {
-            add_action( 'admin_enqueue_scripts','atw_slider_add_admin_scripts');
+    function atw_slider_installed() {
+        return true;
+    }
 
-            function atw_slider_add_admin_scripts() {
-                wp_enqueue_script('atw-combined-scripts',
-                    atw_slider_plugins_url('/includes/pro/js/jquery.ddslick', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-                    ATW_SLIDER_PI_VERSION, true);
-            }
-        }
+    add_action( 'init', 'atw_slider_register_post_cpt' );
+    add_action( 'init', 'atw_slider_setup_shortcodes');
+    add_action( 'add_meta_boxes', 'atw_slider_add_meta_box' );
+    add_action( 'wp_enqueue_scripts', 'atw_slider_enqueue_scripts' );
+    add_action( 'wp_footer','atw_slider_the_footer', 9);	// make it 9 so we can dequeue scripts
+    add_action( 'admin_enqueue_scripts','atw_slider_add_admin_scripts');
 
+
+function atw_slider_add_admin_scripts() {
+    wp_enqueue_script('atw-combined-scripts',
+        atw_slider_plugins_url('/includes/js/jquery.ddslick', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, true);
+}
 
 // ========================================= >>> atw_slider_register_post_cpt <<< ===============================
 /**
 * Registers the atw_slider_post custom post type
 */
 function atw_slider_register_post_cpt() {
-    $singular_item = __('Slider Post', 'atw-slider');
-    $plural_item = __('Slider Posts', 'atw-slider');
+    $singular_item = __('Weaver Slider Post', 'atw-slider');
+    $plural_item = __('Weaver Slider Posts', 'atw-slider');
+
+	$capabilities = array(
+		'edit_post'          => 'edit_post',
+		'edit_posts'         => 'edit_posts',
+		'edit_others_posts'  => 'edit_others_posts',
+		'publish_posts'      => 'publish_posts',
+		'read_post'          => 'read_post',
+		'read_private_posts' => 'read_private_posts',
+		'delete_post'        => 'delete_post'
+	);
+
     $labels = array(
         'name'               =>  $singular_item,
         'singular_name'      => 'Slider',
@@ -110,11 +127,13 @@ function atw_slider_register_post_cpt() {
         'hierarchical'       => false,
         'taxonomies'         => array('atw_slider_group','category','post_tag'),
         'menu_position'      => 64,
-        'menu_icon' 		 => plugins_url( '', __FILE__ ) .'/images/aspen-leaf.png',  // Icon Path
+        'menu_icon'           => 'dashicons-images-alt',
         'supports'           => array( 'title', 'editor', 'page-attributes','thumbnail','excerpt','custom-fields','comments','revisions','post-formats','author')
     );
 
   register_post_type( 'atw_slider_post', $args );
+
+
 
     $tlabels = array(
         'name'                       => _x( 'Slider Group', 'Taxonomy General Name', 'atw-slider' ),
@@ -190,7 +209,7 @@ function atw_slider_add_meta_box() {
 
    add_meta_box(
        'atw_slider_intro',
-       __( 'ATW Slider Post Introduction', 'atw-slider' ),
+       __( 'Weaver Slider Post Introduction', 'atw-slider' ),
        'atw_slider_render_meta_box_intro',
        'atw_slider_post',
        'normal',
@@ -207,12 +226,14 @@ function atw_slider_add_meta_box() {
 function atw_slider_render_meta_box_intro( $post ) {
 ?>
 <p>
-    The <em>ATW Slider Post</em> is a custom post type that is intended to help define ATW Slider/Slideshows. Posts of this type
-    are effectively "hidden". However, you can include <em>ATW Slider Posts</em> by adding the post type to the <em>Post Type</em>
-    option on the <em>Filters</em> tab of the <em>ATW Posts/Slider</em> admin page. You can group sliders, or create different slide shows
-    by specifying a <em>Slider Group</em>.
-    This post type has all the features of a standard post, but because it is a custom post type, post created using it will <strong>not</strong>
-    appear on any of your normal blogs, category lists, tag lists, searches, or other archive-like pages.
+<?php _e('The <em>Weaver Slider Post</em> is a custom post type that is intended to help define Weaver Slider/Slideshows.
+This post type has all the features of a standard post, but because it is a custom post type, posts created using it
+will <strong>not</strong> appear on any of your normal blogs, category lists, tag lists, searches, or other archive-like pages.
+However, you can have <em>Weaver Slider Posts</em> display as standard posts by adding the "atw_slider_post" type to the
+<em>Post Type</em> option on the <em>Filters</em> tab of the <em>Weaver Posts/Slider</em> admin page.
+You can group sliders, or create different slide shows by specifying a <em>Slider Group</em>.
+<br />Please see the <em>Weaver Posts/Slider</em> "Quick Start Help" tab for help on creating a slideshow.', 'atw-slider');
+?>
 </p>
 <?php
 }
@@ -229,37 +250,50 @@ function atw_slider_plugins_url($file,$ext='') {
 
 function atw_slider_enqueue_scripts() {	// enqueue runtime scripts
 
-    $at_end = true;
+	// add plugin CSS here, too.
+
+	$at_end = true;
+
+    wp_register_style('atw-flex-style-sheet', atw_slider_plugins_url('/flex/css/atwflexslider', WEAVER_SLIDER_PI_MINIFY.'.css'),null,WEAVER_SLIDER_PI_VERSION,'screen');
+    wp_enqueue_style('atw-flex-style-sheet');
+
+	if ( atw_posts_getopt( 'showLightbox')) {
+		wp_register_style('atw-lightbox-style-sheet', atw_slider_plugins_url('/includes/js/featherlight/featherlight', WEAVER_SLIDER_PI_MINIFY.'.css'),null,WEAVER_SLIDER_PI_VERSION,'screen');
+		wp_enqueue_style('atw-lightbox-style-sheet');
+
+		wp_enqueue_script('atw-lightbox-script',
+			atw_slider_plugins_url('/includes/js/featherlight/featherlight', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+			WEAVER_SLIDER_PI_VERSION, $at_end);
+	}
+
+
 
     /* use combined js file */
 
     /*
      wp_enqueue_script('atw-flex-easing',
-        atw_slider_plugins_url('/flex/js/jquery.easing', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-        ATW_SLIDER_PI_VERSION, $at_end);
+        atw_slider_plugins_url('/flex/js/jquery.easing', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, $at_end);
     wp_enqueue_script('atw-flex-mousewheel',
-        atw_slider_plugins_url('/flex/js/jquery.mousewheel', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-        ATW_SLIDER_PI_VERSION, $at_end);
+        atw_slider_plugins_url('/flex/js/jquery.mousewheel', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, $at_end);
     wp_enqueue_script('atw-fitvids',
-        atw_slider_plugins_url('/flex/js/jquery.fitvids', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-        ATW_SLIDER_PI_VERSION, $at_end);
+        atw_slider_plugins_url('/flex/js/jquery.fitvids', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, $at_end);
     */
 
     wp_enqueue_script('atw-combined-scripts',
-        atw_slider_plugins_url('/flex/js/jquery.combined', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-        ATW_SLIDER_PI_VERSION, $at_end);
+        atw_slider_plugins_url('/flex/js/jquery.combined', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, $at_end);
 
 
 
     wp_enqueue_script('atw-flex',
-        atw_slider_plugins_url('/flex/js/jquery.flexslider', ATW_SLIDER_PI_MINIFY . '.js'),array('jquery'),
-        ATW_SLIDER_PI_VERSION, $at_end);
+        atw_slider_plugins_url('/flex/js/jquery.flexslider', WEAVER_SLIDER_PI_MINIFY . '.js'),array('jquery'),
+        WEAVER_SLIDER_PI_VERSION, $at_end);
 
 
-    // add plugin CSS here, too.
 
-    wp_register_style('atw-flex-style-sheet', atw_slider_plugins_url('/flex/css/atwflexslider', ATW_SLIDER_PI_MINIFY.'.css'),null,ATW_SLIDER_PI_VERSION,'screen');
-    wp_enqueue_style('atw-flex-style-sheet');
 
 }
 
@@ -267,12 +301,13 @@ function atw_slider_enqueue_scripts() {	// enqueue runtime scripts
 
 function atw_slider_the_footer() {
     if ( !isset($GLOBALS['atw_sliders_count']) ) {  // dequeue scripts if not used
-        echo "<!-- No ATW Sliders used on this page -->\n";
+        echo "<!-- No Weaver Sliders used on this page -->\n";
         /*
         wp_dequeue_script( 'atw-flex-easing' );
         wp_dequeue_script( 'atw-flex-mousewheel' );
         wp_dequeue_script( 'atw-fitvids');
         */
+		wp_dequeue_script( 'atw-lightbox-script' );
         wp_dequeue_script( 'atw-combined-scripts' );
         wp_dequeue_script( 'atw-flex' );
         if ( atw_posts_getopt('showLoading') ) {
@@ -289,7 +324,7 @@ function atw_slider_the_footer() {
 // ========================================= >>> atw_slider_setup_shortcodes <<< ===============================
 
 function atw_slider_setup_shortcodes() {
-    if ( function_exists('atw_posts_getopt') && atw_posts_getopt('enable_gallery_slider')) {
+    if ( function_exists('atw_posts_getopt') && atw_posts_getopt('enable_gallery_slider') ) {
         add_filter( 'post_gallery', 'atw_gallery_sc_filter', 10, 2);
     }
 
@@ -316,10 +351,7 @@ function atw_gallery_sc_filter( $content, $args = '' ) {
 
 function atw_slider_load_admin() {
     require_once(dirname( __FILE__ ) . '/includes/atw-slider-slider-admin.php'); // NOW - load the admin stuff
-    if ( atw_slider_pro() )
-        require_once(dirname( __FILE__ ) . '/includes/pro/atw-slider-pro-admin-pro.php'); // NOW - load the admin stuff
-    else
-        require_once(dirname( __FILE__ ) . '/includes/atw-slider-pro-admin.php'); // NOW - load the admin stuff
+    require_once(dirname( __FILE__ ) . '/includes/atw-slider-pro-admin.php'); // NOW - load the admin stuff
     require_once(dirname( __FILE__ ) . '/includes/atw-slider-help-admin.php'); // NOW - load the admin stuff
 }
 
@@ -338,11 +370,8 @@ function atw_slider_gallery_admin() {
 }
 
 function atw_slider_pro() {
-    // Note that just changing this to true will not give you Pro capabilities.
-    // Those are supplied by content that is included only with the Pro version, and
-    // are enforced by having a registered license. This simple file just makes things easier
-    // to maintain...
-    return ATW_SLIDER_PI_PRO;
+    // This code is leftver from the former split Pro version. These versions have been merges and are all now free.
+    return WEAVER_SLIDER_PI_PRO;
 }
 
 // ====================================== >>> atw_slider_do_gallery <<< ======================================
@@ -483,6 +512,10 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
     $image_code = '';
     $attachment_id = $attachment_obj->ID;
     $src = $attachment_obj->guid;                  // link to full size image
+	if (strpos($src, 'GDML-Mapping') !== false) {		// hack for Google Drive Media Library
+        $full = image_downsize($attachment_id, 'thumbnail');
+		$src = $full[0];
+	}
 
     $caption = $attachment_obj->post_excerpt;      // Media Library Caption field
     $description = $attachment_obj->post_content;  // Media Library description field
@@ -493,6 +526,18 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
         $title = $attachment_obj->post_title;       // title field of image
     }
 
+	$alts = get_post_meta($attachment_id, '_wp_attachment_image_alt');
+
+	if ( count($alts) )
+		$alt = $alts[0];
+	else {
+		if (strlen($title))
+			$alt = $title;
+		else
+			$alt = 'slider image';
+	}
+
+
     $title_div = '';
     if ($title && atw_posts_get_slider_opt('showTitle',$slider) ) {
         $title_div = '<div class="' . atw_slider_get_title_class($slider) . '">' . $title . '</div>';
@@ -500,6 +545,11 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
 
     $link_begin = '';
     $link_end = '';                     // No links by default
+
+	$style='';
+	if ( atw_posts_getopt( 'showLightbox')) {
+		$style = ' style="cursor:pointer;"';
+	}
 
     if ( $gal_link != 'none' && atw_posts_get_slider_opt( 'showLinks', $slider) ) {
         if ( $use_post_info ) {
@@ -514,7 +564,7 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
                 $attachment_link = $src;    // just use raw link if not available
         }
 
-        $link_begin = '<a href="' . $attachment_link . '" alt="' . $title . '">';
+        $link_begin = '<a href="' . $attachment_link . '" alt="' . $alt . '" title="' . $title . '">';
         $link_end = '</a>';
     }
 
@@ -522,7 +572,7 @@ function atw_slider_get_slide_image( $attachment_obj, $slider, $lead_class, $lea
 
 
     $image_code .= $lead . $link_begin .
-    '<img class="atw-gallery-img" src="' . $src . '" alt="' . $title . '" />' . $link_end . "\n";
+    '<img' . $style . ' class="atw-gallery-img" src="' . $src . '" alt="' . $alt . '" title="' . $title . '" />' . $link_end . "\n";
 
 
     if ( $caption && atw_posts_get_slider_opt('showCaptions',$slider) ) {
@@ -595,14 +645,19 @@ function atw_slider_get_first_post_image( $content='', $slider,  $lead_class='cl
             $title_div = '<div class="' . atw_slider_get_title_class($slider) . '">' . the_title('','',false) . '</div>';
         }
 
+		$style='';
+		if ( atw_posts_getopt( 'showLightbox')) {
+			$style = ' style="cursor:pointer;"';
+		}
+
         $lead = atw_slider_set_pager_img( null, $src, $lead_class, $lead_div . $title_div, $slider );
 
         if ( atw_posts_get_slider_opt( 'showLinks', $slider)) {
             return $lead . '<a href="' . get_permalink( get_the_ID() ) .
-                    '"><img class="atw-gallery-img" src="' . $src . '" alt="post image" /></a></div></div>';
+                    '"><img' . $style . ' class="atw-gallery-img" src="' . $src . '" alt="post image" /></a></div></div>';
         }
         else {
-            return $lead . '<img class="atw-gallery-img" src="' . $src . '" alt="post image" /></div></div>';
+            return $lead . '<img' . $style . ' class="atw-gallery-img" src="' . $src . '" alt="post image" /></div></div>';
         }
 
 	} else  { // assume post has a video or something else to show
@@ -701,12 +756,7 @@ if ( function_exists('atw_posts_getopt') && atw_posts_getopt('showLoading')) {
 
 
 
-// =============================>>> DEFINE UPDATES - Pro Only, but code must be here <<<============================
-if ( ATW_SLIDER_PI_PRO ) {
-		// load our custom updater
-		require_once ( dirname( __FILE__ ) . '/includes/pro/atw-slider-pro-license.php' );
 
-}
 // ====================================== >>> atw_slider_kill_header_image <<< ======================================
 
 /* function atw_slider_kill_header_image($args = '') {
@@ -729,7 +779,7 @@ add_filter( 'theme_mod_header_image' , 'atw_slider_kill_header_image');
 
 function atw_slider_admin_menu() {
        $page = add_menu_page(
-	  'Aspen Slider by Aspen ThemeWorks','ATW Slider','install_plugins',
+	  'Weaver Show Sliders by WeaverTheme.com','Weaver Slider','install_plugins',
       'atw_slider_page', 'atw_slider_admin',plugins_url( '', __FILE__ ) .'/images/aspen-leaf.png',62);
 
 	/* using registered $page handle to hook stylesheet loading for this admin page */
@@ -741,11 +791,11 @@ function atw_slider_admin_menu() {
 
 function atw_slider_admin() {
     if ( !function_exists('atw_showposts_installed')) {
-        echo '<h2>You must first install and activate the Aspen Themeworks Show Posts plugin!</h2>';
+        echo '<h2>You must first install and activate the Weaver Show Posts plugin!</h2>';
         if ( is_multisite() ) {
             echo '<h2 style="color:red;">IMPORTANT! This is a WP MultiSite Installation. You MUST follow these special instructions:</h2>';
-            echo '<p>For MultiSite sites, you MUST disable ATW Show Sliders first. Then install and activate ATW Show Posts. After that, you
-            can activate ATW Show Sliders. Both plugins must be activated the same way - either both network activated, or both per site activation.
+            echo '<p>For MultiSite sites, you MUST disable Weaver Show Sliders first. Then install and activate Weaver Show Posts. After that, you
+            can activate Weaver Show Sliders. Both plugins must be activated the same way - either both network activated, or both per site activation.
             After in initial installation, sites with Per Site Activation can activate in any order.</p>';
         }
 
@@ -756,7 +806,7 @@ function atw_slider_admin() {
 
 function atw_slider_admin_scripts() {
     /* called only on the admin page, enqueue our special style sheet here (for tabbed pages) */
-    //wp_enqueue_style('atw_sw_Stylesheet', atw_slider_plugins_url('/atw-admin-style', ATW_SLIDER_PI_MINIFY . '.css'), array(), ATW_SLIDER_PI_VERSION);
+    //wp_enqueue_style('atw_sw_Stylesheet', atw_slider_plugins_url('/atw-admin-style', WEAVER_SLIDER_PI_MINIFY . '.css'), array(), WEAVER_SLIDER_PI_VERSION);
 
 }
 
