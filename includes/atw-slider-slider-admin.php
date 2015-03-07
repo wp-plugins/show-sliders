@@ -99,7 +99,7 @@ be able to show a fullsize view of the slider image in a Lightbox. This option a
     </form>
 
 <?php
-echo '<pre>'; print_r(get_option('atw_posts_settings' ,array())); echo '</pre>';
+//echo '<pre>'; print_r(get_option('atw_posts_settings' ,array())); echo '</pre>';
 
 }
 
