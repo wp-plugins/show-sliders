@@ -1,11 +1,12 @@
 === Weaver Show Sliders ===
+Plugin Name: Weaver Show Sliders
 Contributors: wpweaver
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: slider, slide show, recent posts, responsive, responsive slider, [gallery], gallery slide show, slider options, slider shortcode, FlexSlider
 Requires at least: 3.5
-Tested up to: 4.1
-Stable tag: 1.2.1
+Tested up to: 4.2
+Stable tag: 1.2.4
 
 == Description ==
 
@@ -93,8 +94,15 @@ normally appear in the rest of your site.
 * mousewheel is licensed under MIT
 
 == Changelog ==
+= 1.2.4 =
+* New: Duplicate Slider definition
+* Update WP compatibility to 4.2
+* Added support for manual excerpts
 
-== 1.2.1 ==
+= 1.2.3 =
+* Fixed - error message wording
+
+= 1.2.2 =
 * Fix: removed debugging output
 
 == 1.2 ==

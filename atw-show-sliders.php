@@ -5,7 +5,7 @@ Plugin URI: http://weavertheme.com/plugins/
 Description: Weaver Show Sliders - Show posts, images, and galleries displayed in a responsive slider with many options. Now includes former Pro features!
 Author: wpweaver
 Author URI: http://weavertheme.com/about/
-Version: 1.2.1
+Version: 1.2.4
 
 License: GPL
 
@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* CORE FUNCTIONS
 */
 
-define ( 'WEAVER_SLIDER_PI_VERSION','1.2.1');
+define ( 'WEAVER_SLIDER_PI_VERSION','1.2.4');
 define ( 'WEAVER_SLIDER_PI_PRO', true);            // change this and the Plugin Name above when building Pro version
 define ( 'WEAVER_SLIDER_PI_MINIFY','.min');		// '' for dev, '.min' for production
 
@@ -132,6 +132,7 @@ function atw_slider_register_post_cpt() {
     );
 
   register_post_type( 'atw_slider_post', $args );
+  add_post_type_support( 'atw_slider_post', 'excerpt'); // even though listed in the 'supports' list, needs this explicit add...
 
 
 
