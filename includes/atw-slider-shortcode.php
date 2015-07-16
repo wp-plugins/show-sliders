@@ -21,12 +21,12 @@ function atw_slider_shortcode( $args = '' ) {
 
     if ( !function_exists( 'atw_showposts_installed')) {
         unset($GLOBALS['atw_slider_recursion']);
-        return '<strong>ERROR with [atw_slider name="' . $name . '"]: Weaver Show Posts Plugin not installed.</strong>';
+        return '<strong>ERROR with [show_slider name="' . $name . '"]: Weaver Show Posts Plugin not installed.</strong>';
     }
 
     if ( $name != 'default' && ($name == '' || atw_posts_get_slider_opt( 'name', $name ) == '') ) {
         unset($GLOBALS['atw_slider_recursion']);
-        return '<strong>ERROR with [atw_slider name="' . $name . '"]: You must specify a valid slider name.</strong>';
+        return '<strong>ERROR with [show_slider name="' . $name . '"]: You must specify a valid slider name.</strong>';
     }
 
     $filter = atw_posts_get_slider_opt( 'selected_slider_filter', $name);
@@ -42,7 +42,7 @@ function atw_slider_shortcode( $args = '' ) {
 
     if ( $fname != $filter && $filter != 'default') {
         unset($GLOBALS['atw_slider_recursion']);
-        return '<strong>ERROR with [atw_slider name="' . $name . '"]: Slider does not have a valid filter (' . $filter . '/'. $fname . ') set in options.</strong>';
+        return '<strong>ERROR with [show_slider name="' . $name . '"]: Slider does not have a valid filter (' . $filter . '/'. $fname . ') set in options.</strong>';
     }
 
     // -- ok - we will be generating a slider

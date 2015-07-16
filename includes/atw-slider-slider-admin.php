@@ -6,7 +6,7 @@ function atw_slider_slider_admin() {
    <h2 style="color:blue;">Define Sliders</h2>
    <p>You can define multiple sliders. Each slider can be be a single pane slider, or a carousel. Slider content can be images or posts.
    You must also define a Filter on the Filter tab to select which posts are used for the filter content. Then insert the slider using
-   the <strong>[atw_slider name=slider-name]</strong> shortcode.</p>
+   the <strong>[show_slider name=slider-name]</strong> shortcode.</p>
         <form method="post" enctype="multipart/form-data">
 
         <input type="hidden" name="atw_slider_save_slider_opts" value="Slider Options Saved" />
@@ -107,7 +107,7 @@ be able to show a fullsize view of the slider image in a Lightbox. This option a
 
 function atw_slider_submits() {
 
-    $actions = array( 'atw_slider_delete_slider', 'atw_slider_new_slider',
+    $actions = array( 'atw_slider_delete_slider', 'atw_slider_new_slider', 'atw_slider_duplicate_slider',
                      'atw_slider_save_slider_options', 'atw_slider_header_slider', 'atw_slider_save_gallery_options',
 					 'atw_sliders_restore_filter'
         );
@@ -182,6 +182,30 @@ function atw_slider_delete_slider() {
     return true;
 }
 
+function atw_slider_duplicate_slider() {
+    $name = sanitize_text_field( atw_posts_get_POST ( 'slider_name' ) );
+    $slug = sanitize_title_with_dashes($name);
+    if ( $name == '' ) {
+        atw_posts_error_msg('Please provide a name for the new slider.');
+        return true;
+    }
+
+	$current_slider = atw_posts_getopt('current_slider');
+	global $atw_posts_opts_cache;
+	$cur_opts = $atw_posts_opts_cache['sliders'][$current_slider];
+
+    atw_posts_setopt('current_slider', $slug);
+	$atw_posts_opts_cache['sliders'][$slug] = $cur_opts;
+
+    atw_posts_set_slider_opt( 'name', $name);
+    atw_posts_set_slider_opt( 'slug', $slug);
+
+	$new_opts = $cur_opts = $atw_posts_opts_cache['sliders'][$slug];
+
+
+    atw_posts_save_msg('Slider Duplicated: "' . $name . '" (Slug: <em>' . $slug . '</em>)');
+    return true;
+}
 
 
 function atw_slider_new_slider() {
@@ -376,11 +400,12 @@ function atw_slider_select_slider() {
 
     &nbsp;&nbsp;&larr; <input class="button" type="submit"
                       onclick="return confirm('This will clear all current slider settings. The slider will also be deleted unless it is the Default slider. Are you sure?')"
-                      name="atw_slider_delete_slider" value="Clear/Delete Current Slider"/></td></tr>
+        name="atw_slider_delete_slider" value="Clear/Delete Current Slider"/></td></tr>
     <tr>
     <td>&nbsp;</td>
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols=24 rows=1 placeholder="Enter name for new slider" maxlength=64 name="slider_name"></textarea>
+    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols=35 rows=1 placeholder="Enter name for new/duplicate slider" maxlength=64 name="slider_name"></textarea>
     &larr; <input class="button" type="submit" name="atw_slider_new_slider" value="Create New Slider"/>
+	<em>-or-</em> <input class="button" type="submit" name="atw_slider_duplicate_slider" value="Duplicate Current Slider"/>
     </td>
     </tr></table>
 
@@ -402,6 +427,7 @@ function atw_slider_select_slider() {
 atw_posts_nonce_field('atw_slider_set_to_slider');
 atw_posts_nonce_field('atw_slider_delete_slider');
 atw_posts_nonce_field('atw_slider_new_slider');
+atw_posts_nonce_field('atw_slider_duplicate_slider');
 atw_posts_nonce_field('atw_sliders_restore_filter');
 
 atw_slider_end_section();
