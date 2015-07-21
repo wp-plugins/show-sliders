@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: slider, slide show, recent posts, responsive, responsive slider, [gallery], gallery slide show, slider options, slider shortcode, FlexSlider
 Requires at least: 3.5
 Tested up to: 4.2
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 
 == Description ==
 
@@ -94,6 +94,9 @@ normally appear in the rest of your site.
 * mousewheel is licensed under MIT
 
 == Changelog ==
+= 1.2.5 =
+Fixed: Loading Spinner
+
 = 1.2.4 =
 * New: Duplicate Slider definition
 * Update WP compatibility to 4.2

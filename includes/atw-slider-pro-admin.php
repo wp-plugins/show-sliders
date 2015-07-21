@@ -93,7 +93,7 @@ function atw_slider_image_slider_layout() {
     atw_posts_slider_checkbox( 'fullWidthImages', '+Force images to use full width of slider. (Note: this can make portrait images very large, but will make small images fit the slider.)');
     atw_posts_slider_val( 'maxImageHeight', '+Maximum Height of Image. Useful to control height when full width set, but will lead to clipping of taller images.', 'px');
     echo '<br />';
-    
+
     atw_slider_subheader('Prev/Next Navigation', 'Change style and behavior of navigation arrows');
     atw_posts_slider_checkbox( 'topNavArrows', 'Show Prev/Next Navigation Arrows at top right corner of slider.');
     atw_posts_slider_checkbox( 'disableArrowSlide', 'Disable arrow "slide-in" effect.');
@@ -235,8 +235,14 @@ function atw_slider_show_misc_opts() {
     echo '</p>';
 
     atw_posts_slider_checkbox( 'directionVertical', '+Use Vertical sliding for single-image Slider Type (not Fader or Carousel). Only looks good with borderless, equal height slides.');
-    atw_posts_slider_checkbox( 'showLoading', 'Show "Loading" spinner - useful if you have slide shows that take extra time to load. Applies to <em>all</em> sliders.',
-                              '<br /><br />');
+    //atw_posts_slider_checkbox( 'showLoading', 'Show "Loading" spinner - useful if you have slide shows that take extra time to load. Applies to <em>all</em> sliders.','<br /><br />');
+	// showLoading needs special treatment
+?>
+	<div style="display:inline;padding-left:2.5em;text-indent:-1.7em;"><label><input type="checkbox" name="showLoading" id="showLoading"
+        <?php checked(atw_posts_getopt('showLoading') ); ?> >&nbsp;
+Show "Loading" spinner - useful if you have slide shows that take extra time to load. Applies to <em>all</em> sliders.
+</label></div><br /><br />
+<?php
 
     atw_slider_subheader('No [gallery]', 'Can avoid [gallery] within [gallery] issues.');
 
