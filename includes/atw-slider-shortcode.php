@@ -57,6 +57,10 @@ function atw_slider_shortcode( $args = '' ) {
         $GLOBALS['atw_slider_names'][$GLOBALS['atw_sliders_count']] = $name;
     }
 
+	if ( isset($GLOBALS['atw_slider_thumbs']))	// have to clear these
+        unset($GLOBALS['atw_slider_thumbs']);
+
+
     if ( !isset($GLOBALS['atw_slider_names' . $name]) ) {
         $GLOBALS['atw_slider_names' . $name] = 1;       // first time for this slider
         $prestyle .= atw_slider_emit_css( $name );      // emit inline CSS for this slider
